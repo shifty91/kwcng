@@ -15,7 +15,7 @@
       --max_threads, -m: maximum number of threads to be used
       --chunk_size, -t:  thread workload size
       --help, -h:        print this help text
-      --version, -v:     print version imformation
+      --version, -v:     print version information
     By default all options are enabled. If no file is specified, stdin is used
     kwcng version 1.0 (C) Kurt Kanzenbach <kurt@kmk-computers.de>
 

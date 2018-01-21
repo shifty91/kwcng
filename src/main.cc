@@ -67,7 +67,7 @@ void print_usage_and_die(int die)
     std::cerr << "  --max_threads, -m: maximum number of threads to be used" << std::endl;
     std::cerr << "  --chunk_size, -t:  thread workload size" << std::endl;
     std::cerr << "  --help, -h:        print this help text" << std::endl;
-    std::cerr << "  --version, -v:     print version imformation"  << std::endl;
+    std::cerr << "  --version, -v:     print version information"  << std::endl;
     std::cerr << "By default all options are enabled. If no file is specified, stdin is used"
               << std::endl;
     std::cerr << "kwcng version " << VERSION << " (C) Kurt Kanzenbach <kurt@kmk-computers.de>"
