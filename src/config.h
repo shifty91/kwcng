@@ -37,7 +37,7 @@ static inline constexpr auto BIT(std::uint32_t x)
 template<typename T>
 auto to_scalar(T value)
 {
-    return static_cast<typename std::underlying_type<T>::type>(value);
+    return static_cast<std::underlying_type_t<T>>(value);
 }
 
 enum class KwcNGFlags: std::uint32_t {
@@ -47,10 +47,37 @@ enum class KwcNGFlags: std::uint32_t {
     PARSEABLE = BIT(3),
 };
 
+inline auto operator*(KwcNGFlags val)
+{
+    return to_scalar<KwcNGFlags>(val);
+}
+
+inline KwcNGFlags operator| (KwcNGFlags lhs, KwcNGFlags rhs)
+{
+    return static_cast<KwcNGFlags>(*lhs | *rhs);
+}
+
+inline KwcNGFlags operator& (KwcNGFlags lhs, KwcNGFlags rhs)
+{
+    return static_cast<KwcNGFlags>(*lhs & *rhs);
+}
+
+inline KwcNGFlags& operator|= (KwcNGFlags& lhs, KwcNGFlags rhs)
+{
+    lhs = static_cast<KwcNGFlags>(*lhs | *rhs);
+    return lhs;
+}
+
+inline KwcNGFlags operator&= (KwcNGFlags& lhs, KwcNGFlags rhs)
+{
+    lhs = static_cast<KwcNGFlags>(*lhs & *rhs);
+    return lhs;
+}
+
 struct KwcNGConfig {
 public:
     static inline std::size_t DEFAULT_CHUNK_SIZE = 4096;
-    std::uint32_t flags;
+    std::underlying_type_t<KwcNGFlags> flags;
     std::size_t max_threads;
     std::size_t chunk_size;
 };

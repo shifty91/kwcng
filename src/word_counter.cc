@@ -65,10 +65,10 @@ WordCountResult WordCounter::count(const std::shared_ptr<WordCountLoad<>>& load)
     result.chars() = load->size();
 
     for (std::size_t i = 0; i < load->size(); ++i) {
-        if ((config.flags & to_scalar(KwcNGFlags::LINES)) && (*load)[i] == L'\n')
+        if ((config.flags & *KwcNGFlags::LINES) && (*load)[i] == L'\n')
             result.lines()++;
 
-        if (!(config.flags & to_scalar(KwcNGFlags::WORDS)))
+        if (!(config.flags & *KwcNGFlags::WORDS))
             continue;
 
         if (std::iswspace((*load)[i]) && !std::iswspace(prev))
@@ -77,7 +77,7 @@ WordCountResult WordCounter::count(const std::shared_ptr<WordCountLoad<>>& load)
         prev = (*load)[i];
     }
 
-    if ((config.flags & to_scalar(KwcNGFlags::WORDS)) &&
+    if ((config.flags & *KwcNGFlags::WORDS) &&
         load->size() != config.chunk_size &&
         !std::iswspace(prev))
         result.words()++;
