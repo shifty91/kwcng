@@ -119,7 +119,7 @@ using KwcNGFlagMap = GenericFlagMap<KwcNGFlags>;
 
 struct KwcNGConfig {
 public:
-    static inline std::size_t DEFAULT_CHUNK_SIZE = 4096;
+    static const inline std::size_t DEFAULT_CHUNK_SIZE = 4096;
     KwcNGFlagMap flags;
     std::size_t max_threads;
     std::size_t chunk_size;
