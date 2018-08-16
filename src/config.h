@@ -29,7 +29,7 @@
 #include <cstdint>
 #include <type_traits>
 
-static inline constexpr auto BIT(std::uint32_t x)
+static inline constexpr auto BIT(std::uint32_t x) noexcept
 {
     return 1 << x;
 }
@@ -47,37 +47,80 @@ enum class KwcNGFlags: std::uint32_t {
     PARSEABLE = BIT(3),
 };
 
-inline constexpr auto operator*(KwcNGFlags val)
+inline constexpr auto operator*(KwcNGFlags val) noexcept
 {
     return to_scalar<KwcNGFlags>(val);
 }
 
-inline constexpr KwcNGFlags operator| (KwcNGFlags lhs, KwcNGFlags rhs)
+inline constexpr KwcNGFlags operator| (KwcNGFlags lhs, KwcNGFlags rhs) noexcept
 {
     return static_cast<KwcNGFlags>(*lhs | *rhs);
 }
 
-inline constexpr KwcNGFlags operator& (KwcNGFlags lhs, KwcNGFlags rhs)
+inline constexpr KwcNGFlags operator& (KwcNGFlags lhs, KwcNGFlags rhs) noexcept
 {
     return static_cast<KwcNGFlags>(*lhs & *rhs);
 }
 
-inline constexpr KwcNGFlags& operator|= (KwcNGFlags& lhs, KwcNGFlags rhs)
+inline constexpr KwcNGFlags& operator|= (KwcNGFlags& lhs, KwcNGFlags rhs) noexcept
 {
     lhs = static_cast<KwcNGFlags>(*lhs | *rhs);
     return lhs;
 }
 
-inline constexpr KwcNGFlags& operator&= (KwcNGFlags& lhs, KwcNGFlags rhs)
+inline constexpr KwcNGFlags& operator&= (KwcNGFlags& lhs, KwcNGFlags rhs) noexcept
 {
     lhs = static_cast<KwcNGFlags>(*lhs & *rhs);
     return lhs;
 }
 
+template<typename ENUM>
+struct GenericFlagMap {
+public:
+    // non-explicit: initialize from ENUM
+    GenericFlagMap(ENUM val) :
+        _val{*val}
+    {}
+
+    GenericFlagMap() :
+        _val{0}
+    {}
+
+    virtual ~GenericFlagMap()
+    {}
+
+    // if (flags & ENUM::blub) { ... }
+    constexpr GenericFlagMap operator& (ENUM rhs) const noexcept
+    {
+        return _val & *rhs;
+    }
+
+    explicit constexpr operator bool() const noexcept
+    {
+        return _val;
+    }
+
+    // flags |= ENUM::blub
+    constexpr GenericFlagMap& operator|= (ENUM rhs) noexcept
+    {
+        _val |= *rhs;
+        return *this;
+    }
+
+private:
+    GenericFlagMap(std::underlying_type_t<ENUM> val) :
+        _val{val}
+    {}
+
+    std::underlying_type_t<ENUM> _val;
+};
+
+using KwcNGFlagMap = GenericFlagMap<KwcNGFlags>;
+
 struct KwcNGConfig {
 public:
     static inline std::size_t DEFAULT_CHUNK_SIZE = 4096;
-    std::underlying_type_t<KwcNGFlags> flags;
+    KwcNGFlagMap flags;
     std::size_t max_threads;
     std::size_t chunk_size;
 };

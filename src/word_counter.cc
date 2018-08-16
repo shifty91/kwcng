@@ -65,10 +65,10 @@ WordCountResult WordCounter::count(const std::shared_ptr<WordCountLoad<>>& load)
     result.chars() = load->size();
 
     for (std::size_t i = 0; i < load->size(); ++i) {
-        if ((config.flags & *KwcNGFlags::LINES) && (*load)[i] == L'\n')
+        if ((config.flags & KwcNGFlags::LINES) && (*load)[i] == L'\n')
             result.lines()++;
 
-        if (!(config.flags & *KwcNGFlags::WORDS))
+        if (!(config.flags & KwcNGFlags::WORDS))
             continue;
 
         if (std::iswspace((*load)[i]) && !std::iswspace(prev))
@@ -77,7 +77,7 @@ WordCountResult WordCounter::count(const std::shared_ptr<WordCountLoad<>>& load)
         prev = (*load)[i];
     }
 
-    if ((config.flags & *KwcNGFlags::WORDS) &&
+    if ((config.flags & KwcNGFlags::WORDS) &&
         load->size() != config.chunk_size &&
         !std::iswspace(prev))
         result.words()++;
@@ -138,18 +138,18 @@ void WordCounter::distribute_work(const Files& files)
 
 void WordCounter::print_result(const WordCountResult& result) const
 {
-    if (config.flags & to_scalar(KwcNGFlags::PARSEABLE)) {
+    if (config.flags & KwcNGFlags::PARSEABLE) {
         std::cout << result.file() << ";" << result.lines() << ";"
                   << result.words() << ";" << result.chars() << std::endl;
         return;
     }
 
     std::cout << "file: " << std::setw(24) << result.file();
-    if (config.flags & to_scalar(KwcNGFlags::LINES))
+    if (config.flags & KwcNGFlags::LINES)
         std::cout << " lines: " << std::setw(10) << result.lines();
-    if (config.flags & to_scalar(KwcNGFlags::WORDS))
+    if (config.flags & KwcNGFlags::WORDS)
         std::cout << " words: " << std::setw(10) << result.words();
-    if (config.flags & to_scalar(KwcNGFlags::CHARS))
+    if (config.flags & KwcNGFlags::CHARS)
         std::cout << " chars: " << std::setw(10) << result.chars();
     std::cout << std::endl;
 }

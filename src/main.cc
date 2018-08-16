@@ -96,16 +96,16 @@ int main(int argc, char *argv[])
     while ((c = getopt_long(argc, argv, "lwcpm:t:hv", long_opts, NULL)) != -1) {
         switch (c) {
         case 'l':
-            config.flags |= *KwcNGFlags::LINES;
+            config.flags |= KwcNGFlags::LINES;
             break;
         case 'w':
-            config.flags |= *KwcNGFlags::WORDS;
+            config.flags |= KwcNGFlags::WORDS;
             break;
         case 'c':
-            config.flags |= *KwcNGFlags::CHARS;
+            config.flags |= KwcNGFlags::CHARS;
             break;
         case 'p':
-            config.flags |= *KwcNGFlags::PARSEABLE;
+            config.flags |= KwcNGFlags::PARSEABLE;
             break;
         case 'm':
             config.max_threads = std::atoll(optarg);
@@ -123,8 +123,8 @@ int main(int argc, char *argv[])
     }
     if (!config.max_threads || !config.chunk_size)
         print_usage_and_die(1);
-    if (!(config.flags & *(KwcNGFlags::LINES | KwcNGFlags::WORDS | KwcNGFlags::CHARS)))
-        config.flags |= *(KwcNGFlags::LINES | KwcNGFlags::WORDS | KwcNGFlags::CHARS);
+    if (!(config.flags & (KwcNGFlags::LINES | KwcNGFlags::WORDS | KwcNGFlags::CHARS)))
+        config.flags |= KwcNGFlags::LINES | KwcNGFlags::WORDS | KwcNGFlags::CHARS;
 
     argc -= optind;
     argv += optind;
