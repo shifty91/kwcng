@@ -55,7 +55,7 @@ public:
     }
 
 private:
-    WordCountResult count(const std::shared_ptr<WordCountLoad<>>& load) const;
+    WordCountResult count(const WordCountLoad<>& load) const;
     void print_result(const WordCountResult& result) const;
 
     WordCountResult m_global;

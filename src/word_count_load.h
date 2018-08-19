@@ -96,7 +96,7 @@ public:
         return *this;
     }
 
-    T operator[](std::size_t idx) noexcept
+    T operator[](std::size_t idx) const noexcept
     {
         return m_data[idx];
     }

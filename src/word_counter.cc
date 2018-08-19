@@ -44,7 +44,7 @@ void WordCounter::count_thread()
         if (!load)
             break;
 
-        auto res = count(load);
+        auto res = count(*load);
         {
             std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -56,29 +56,29 @@ void WordCounter::count_thread()
     }
 }
 
-WordCountResult WordCounter::count(const std::shared_ptr<WordCountLoad<>>& load) const
+WordCountResult WordCounter::count(const WordCountLoad<>& load) const
 {
     WordCountResult result;
-    auto prev = load->prev();
+    auto prev = load.prev();
 
-    result.file()  = load->file();
-    result.chars() = load->size();
+    result.file()  = load.file();
+    result.chars() = load.size();
 
-    for (std::size_t i = 0; i < load->size(); ++i) {
-        if ((config.flags & KwcNGFlags::LINES) && (*load)[i] == L'\n')
+    for (std::size_t i = 0; i < load.size(); ++i) {
+        if ((config.flags & KwcNGFlags::LINES) && load[i] == L'\n')
             result.lines()++;
 
         if (!(config.flags & KwcNGFlags::WORDS))
             continue;
 
-        if (std::iswspace((*load)[i]) && !std::iswspace(prev))
+        if (std::iswspace(load[i]) && !std::iswspace(prev))
             result.words()++;
 
-        prev = (*load)[i];
+        prev = load[i];
     }
 
     if ((config.flags & KwcNGFlags::WORDS) &&
-        load->size() != config.chunk_size &&
+        load.size() != config.chunk_size &&
         !std::iswspace(prev))
         result.words()++;
 
