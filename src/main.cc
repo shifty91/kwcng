@@ -31,6 +31,7 @@
 #include <chrono>
 #include <functional>
 #include <cstdlib>
+#include <clocale>
 #include <libgen.h>
 #include <unistd.h>
 #include <getopt.h>
