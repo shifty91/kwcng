@@ -88,7 +88,7 @@ WordCountResult WordCounter::count(const WordCountLoad<>& load) const
 void WordCounter::distribute_work(const Files& files)
 {
     for (auto&& file: files) {
-        std::shared_ptr<WordCountLoad<>> load;
+        std::unique_ptr<WordCountLoad<>> load;
         std::wifstream ifs;
         std::wistream *is;
         auto prev = L'a';
@@ -110,7 +110,7 @@ void WordCounter::distribute_work(const Files& files)
         };
 
         while (42) {
-            load = std::make_shared<WordCountLoad<>>(config.chunk_size, file);
+            load = std::make_unique<WordCountLoad<>>(config.chunk_size, file);
             load->prev() = prev;
             is->read(load->data(), config.chunk_size);
 

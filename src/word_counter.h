@@ -59,7 +59,7 @@ private:
     void print_result(const WordCountResult& result) const;
 
     WordCountResult m_global;
-    ConcurrentQueue<std::shared_ptr<WordCountLoad<>>> m_queue;
+    ConcurrentQueue<std::unique_ptr<WordCountLoad<>>> m_queue;
     std::unordered_map<std::string, WordCountResult> m_results;
     std::mutex m_mutex;
 };

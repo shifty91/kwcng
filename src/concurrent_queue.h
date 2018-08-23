@@ -65,7 +65,7 @@ public:
         m_cv.wait(lock, [this] { return !m_queue.empty() || m_stop; });
         if (m_stop && m_queue.empty())
             return T();
-        auto element = m_queue.front();
+        auto element = std::move(m_queue.front());
         m_queue.pop();
         return element;
     }
