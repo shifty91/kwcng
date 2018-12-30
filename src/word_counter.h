@@ -28,6 +28,7 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <string>
 #include <unordered_map>
 
 #include "concurrent_queue.h"
@@ -39,8 +40,7 @@ class WordCounter
 public:
     using Files = std::vector<std::string>;
 
-    WordCounter() :
-        m_global("global")
+    WordCounter()
     {}
 
     void count_thread();
@@ -56,7 +56,7 @@ public:
 
 private:
     WordCountResult count(const WordCountLoad<>& load) const;
-    void print_result(const WordCountResult& result) const;
+    void print_result(const std::string& file, const WordCountResult& result) const;
 
     WordCountResult m_global;
     ConcurrentQueue<std::unique_ptr<WordCountLoad<>>> m_queue;

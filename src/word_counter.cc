@@ -49,8 +49,6 @@ void WordCounter::count_thread()
             std::lock_guard<std::mutex> lock(m_mutex);
 
             m_results[res.file()] += res;
-            if (m_results[res.file()].file().empty())
-                m_results[res.file()].file() = res.file();
             m_global += res;
         }
     }
@@ -136,15 +134,16 @@ void WordCounter::distribute_work(const Files& files)
     }
 }
 
-void WordCounter::print_result(const WordCountResult& result) const
+void WordCounter::print_result(
+    const std::string& file, const WordCountResult& result) const
 {
     if (config.flags & KwcNGFlags::PARSEABLE) {
-        std::cout << result.file() << ";" << result.lines() << ";"
+        std::cout << file << ";" << result.lines() << ";"
                   << result.words() << ";" << result.chars() << std::endl;
         return;
     }
 
-    std::cout << "file: " << std::setw(24) << result.file();
+    std::cout << "file: " << std::setw(24) << file;
     if (config.flags & KwcNGFlags::LINES)
         std::cout << " lines: " << std::setw(10) << result.lines();
     if (config.flags & KwcNGFlags::WORDS)
@@ -157,7 +156,7 @@ void WordCounter::print_result(const WordCountResult& result) const
 void WordCounter::print_results() const
 {
     for (auto&& i: m_results)
-        print_result(i.second);
+        print_result(i.first, i.second);
     if (m_results.size() > 1)
-        print_result(m_global);
+        print_result("global", m_global);
 }

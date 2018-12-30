@@ -35,10 +35,6 @@ public:
         m_words{0}, m_lines{0}, m_chars{0}
     {}
 
-    WordCountResult(const std::string& file) :
-        m_file{file}, m_words{0}, m_lines{0}, m_chars{0}
-    {}
-
     const std::string& file() const noexcept
     {
         return m_file;
