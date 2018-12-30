@@ -7,17 +7,16 @@
 ## Usage ##
 
     usage: kwcng [options] [files]
-      options:
-      --lines, -l:       count lines
-      --words, -w:       count words
-      --chars, -c:       count character
-      --parseable, -p:   parseable output for use in scripts
-      --max_threads, -m: maximum number of threads to be used
+      --chars, -c:       count characters
       --chunk_size, -t:  thread workload size
       --help, -h:        print this help text
+      --lines, -l:       count lines
+      --max_threads, -m: maximum number of threads to be used
+      --parseable, -p:   parseable output for use in scripts
       --version, -v:     print version information
+      --words, -w:       count words
     By default all options are enabled. If no file is specified, stdin is used
-    kwcng version 1.0 (C) Kurt Kanzenbach <kurt@kmk-computers.de>
+    kwcng version 1.1 (C) Kurt Kanzenbach <kurt@kmk-computers.de>
 
 ## Build ##
 
