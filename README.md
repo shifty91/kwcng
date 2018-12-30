@@ -23,6 +23,8 @@
 
 ### Linux ###
 
+    $ git submodule init
+    $ git submodule update
     $ mkdir build
     $ cd build
     $ cmake ..
@@ -31,6 +33,8 @@
 
 ### FreeBSD ###
 
+    $ git submodule init
+    $ git submodule update
     $ mkdir build
     $ cd build
     $ make -j8
