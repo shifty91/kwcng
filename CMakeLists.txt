@@ -7,7 +7,7 @@ set(SRCS
   src/config.cc
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pedantic -Wall -march=native -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pedantic -Wall -march=native")
 set(CMAKE_BUILD_TYPE "Release")
 set(VERSION "1.0")
 
@@ -17,9 +17,6 @@ check_cxx_compiler_flag("-std=c++17" HAVE_CPP17)
 if (NOT HAVE_CPP17)
   message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} has no C++17 support.")
 endif()
-
-# Set custom RPATH
-SET(CMAKE_INSTALL_RPATH "${CUSTOM_RPATH}")
 
 # threads
 set(THREADS_PREFER_PTHREAD_FLAG ON)

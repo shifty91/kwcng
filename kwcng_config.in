@@ -4,5 +4,3 @@
 #define VERSION "${VERSION}"
 
 #endif /* _KWCNG_CONFIG_H_ */
-
-
