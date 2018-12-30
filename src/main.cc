@@ -32,9 +32,8 @@
 #include <functional>
 #include <cstdlib>
 #include <clocale>
-#include <libgen.h>
-#include <unistd.h>
-#include <getopt.h>
+
+#include <kopt/kopt.h>
 
 #include "kwcng_config.h"
 #include "config.h"
@@ -44,31 +43,10 @@
 
 using Threads = std::vector<std::thread>;
 
-static struct option long_opts[] = {
-    { "lines",       no_argument,       NULL, 'l' },
-    { "words",       no_argument,       NULL, 'w' },
-    { "chars",       no_argument,       NULL, 'c' },
-    { "parseable",   no_argument,       NULL, 'p' },
-    { "max_threads", required_argument, NULL, 'm' },
-    { "chunk_size",  required_argument, NULL, 't' },
-    { "help",        no_argument,       NULL, 'h' },
-    { "version",     no_argument,       NULL, 'v' },
-    { NULL,          0,                 NULL,  0  },
-};
-
 [[noreturn]] static inline
-void print_usage_and_die(int die)
+void print_usage_and_die(const Kopt::OptionParser& parser, int die)
 {
-    std::cerr << "usage: kwcng [options] [files]" << std::endl;
-    std::cerr << "  options:" << std::endl;
-    std::cerr << "  --lines, -l:       count lines" << std::endl;
-    std::cerr << "  --words, -w:       count words" << std::endl;
-    std::cerr << "  --chars, -c:       count character" << std::endl;
-    std::cerr << "  --parseable, -p:   parseable output for use in scripts" << std::endl;
-    std::cerr << "  --max_threads, -m: maximum number of threads to be used" << std::endl;
-    std::cerr << "  --chunk_size, -t:  thread workload size" << std::endl;
-    std::cerr << "  --help, -h:        print this help text" << std::endl;
-    std::cerr << "  --version, -v:     print version information"  << std::endl;
+    std::cerr << parser.get_usage("[files]");
     std::cerr << "By default all options are enabled. If no file is specified, stdin is used"
               << std::endl;
     std::cerr << "kwcng version " << VERSION << " (C) Kurt Kanzenbach <kurt@kmk-computers.de>"
@@ -86,54 +64,58 @@ void print_version_and_die()
 
 int main(int argc, char *argv[])
 {
-    // parse args
+    Kopt::OptionParser parser{argc, argv};
     WordCounter::Files files;
     WordCounter counter;
     Threads threads;
-    int c;
 
+    // setup arguments
+    parser.add_flag_option("lines", "count lines", 'l');
+    parser.add_flag_option("words", "count words", 'w');
+    parser.add_flag_option("chars", "count characters", 'c');
+    parser.add_flag_option("parseable", "parseable output for use in scripts", 'p');
+    parser.add_argument_option("max_threads", "maximum number of threads to be used", 'm');
+    parser.add_argument_option("chunk_size", "thread workload size", 't');
+    parser.add_flag_option("help", "print this help text", 'h');
+    parser.add_flag_option("version", "print version information", 'v');
+
+    // set default values
     config.max_threads = std::thread::hardware_concurrency();
     config.chunk_size  = KwcNGConfig::DEFAULT_CHUNK_SIZE;
-    while ((c = getopt_long(argc, argv, "lwcpm:t:hv", long_opts, NULL)) != -1) {
-        switch (c) {
-        case 'l':
-            config.flags |= KwcNGOpt::LINES;
-            break;
-        case 'w':
-            config.flags |= KwcNGOpt::WORDS;
-            break;
-        case 'c':
-            config.flags |= KwcNGOpt::CHARS;
-            break;
-        case 'p':
-            config.flags |= KwcNGOpt::PARSEABLE;
-            break;
-        case 'm':
-            config.max_threads = std::atoll(optarg);
-            break;
-        case 't':
-            config.chunk_size = std::atoll(optarg);
-            break;
-        case 'v':
+
+    // parse and configure
+    try {
+        parser.parse();
+
+        if (*parser["version"])
             print_version_and_die();
-        case 'h':
-            print_usage_and_die(0);
-        default:
-            print_usage_and_die(1);
-        }
+        if (*parser["help"])
+            print_usage_and_die(parser, 0);
+
+        if (*parser["lines"])
+            config.flags |= KwcNGOpt::LINES;
+        if (*parser["words"])
+            config.flags |= KwcNGOpt::WORDS;
+        if (*parser["chars"])
+            config.flags |= KwcNGOpt::CHARS;
+        if (*parser["parseable"])
+            config.flags |= KwcNGOpt::PARSEABLE;
+        if (*parser["max_threads"])
+            config.max_threads = parser["max_threads"]->to<std::size_t>();
+        if (*parser["chunk_size"])
+            config.chunk_size = parser["chunk_size"]->to<std::size_t>();
+    } catch (const std::exception& ex) {
+        std::cerr << "Error while parsing command line arguments: " << ex.what()
+                  << std::endl;
+        print_usage_and_die(parser, 1);
     }
     if (!config.max_threads || !config.chunk_size)
-        print_usage_and_die(1);
+        print_usage_and_die(parser, 1);
     if (!(config.flags & (KwcNGOpt::LINES | KwcNGOpt::WORDS | KwcNGOpt::CHARS)))
         config.flags |= KwcNGOpt::LINES | KwcNGOpt::WORDS | KwcNGOpt::CHARS;
 
-    argc -= optind;
-    argv += optind;
-
-    for (auto i = 0; i < argc; ++i)
-        files.emplace_back(argv[i]);
-
-    if (!argc)
+    files = parser.unparsed_options();
+    if (files.empty())
         files.emplace_back("stdin");
 
     if (!std::setlocale(LC_ALL, "")) {

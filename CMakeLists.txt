@@ -29,8 +29,27 @@ configure_file(
   )
 include_directories("${PROJECT_BINARY_DIR}")
 
+# kopt
+include(GNUInstallDirs)
+include(ExternalProject)
+externalproject_add(kopt
+  SOURCE_DIR "${CMAKE_SOURCE_DIR}/lib/kopt/"
+  CMAKE_ARGS
+  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+  -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+  -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+  -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/kopt
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+add_library(kopt_lib STATIC IMPORTED)
+set_target_properties(kopt_lib PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/kopt/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}kopt${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set(KOPT_INCLUDE_DIR "${CMAKE_BINARY_DIR}/kopt/include/")
+add_dependencies(kopt_lib kopt)
+
 include_directories("src")
 include_directories("lib/gfm/include")
+include_directories(${KOPT_INCLUDE_DIR})
 add_executable(kwcng ${SRCS})
 target_link_libraries(kwcng Threads::Threads)
+target_link_libraries(kwcng kopt_lib)
 install(TARGETS kwcng DESTINATION bin COMPONENT binaries)
