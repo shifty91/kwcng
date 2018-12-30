@@ -79,10 +79,6 @@ int main(int argc, char *argv[])
     parser.add_flag_option("help", "print this help text", 'h');
     parser.add_flag_option("version", "print version information", 'v');
 
-    // set default values
-    config.max_threads = std::thread::hardware_concurrency();
-    config.chunk_size  = KwcNGConfig::DEFAULT_CHUNK_SIZE;
-
     // parse and configure
     try {
         parser.parse();

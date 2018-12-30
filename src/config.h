@@ -25,6 +25,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <thread>
 #include <cstdint>
 
 #include <gfm/gfm.h>
@@ -39,7 +40,11 @@ enum class KwcNGOpt: std::uint32_t {
 GFM_DECLARE_FLAG_MAP(KwcNGOpt);
 
 struct KwcNGConfig {
-public:
+    KwcNGConfig() :
+        max_threads{std::thread::hardware_concurrency()},
+        chunk_size{DEFAULT_CHUNK_SIZE}
+    {}
+
     static const inline std::size_t DEFAULT_CHUNK_SIZE = 4096;
     KwcNGOptFlags flags;
     std::size_t max_threads;
