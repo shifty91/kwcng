@@ -30,6 +30,7 @@ configure_file(
 include_directories("${PROJECT_BINARY_DIR}")
 
 include_directories("src")
+include_directories("lib/gfm/include")
 add_executable(kwcng ${SRCS})
 target_link_libraries(kwcng Threads::Threads)
 install(TARGETS kwcng DESTINATION bin COMPONENT binaries)
